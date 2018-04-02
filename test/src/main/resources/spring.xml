@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:core="http://activemq.apache.org/schema/core" xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core
+		http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-4.3.xsd">
+
+	<bean id="serverProperties"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="locations">
+			<list>
+				<value>classpath:/application.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="searchSystemEnvironment" value="true" />
+	</bean>
+
+	<!-- A JMS connection factory for ActiveMQ -->
+ 	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"
+		p:brokerURL="${broker.url}" p:userName="${broker.username}"
+		p:password="${broker.password}" /> 
+		
+	<!--	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory"
+		p:brokerURL="${broker.url}"  />-->
+
+	<!-- <bean id="profileamqtopic" class="org.apache.activemq.command.ActiveMQTopic"> 
+		<constructor-arg value="${profileamqlistener.topic}" /> </bean> -->
+
+	<bean id="kinesisRecordWriter"
+		class="com.dowjones.profileamqlistener.service.KinesisRecordsWriter">
+		<constructor-arg value="${profileamqlistener.kinesisstream.name}" />
+	</bean>
+
+
+	<bean id="messageListener"
+		class="com.dowjones.contrail.client.listener.ContrailMessageProcessor">
+	</bean>
+
+	<bean id="ContentDelivery"
+		class="com.dowjones.profileamqlistener.messaging.ProfileMessageListener"
+		autowire="constructor">
+	</bean>
+	<!-- <bean id="messageDestination" class="org.apache.activemq.command.ActiveMQQueue"> 
+		<constructor-arg value="${profileamqlistener.destination.name}" /> </bean> -->
+
+	<!-- <bean id="jmsContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer"> 
+		<property name="connectionFactory" ref="connectionFactory" /> <property name="destination" 
+		ref="messageDestination" /> <property name="messageListener" ref="messageListener" 
+		/> <property name="clientId" value="${profileamqlistener.clientId}"></property> 
+		<property name="subscriptionDurable" value="true"></property> <property name="pubSubDomain" 
+		value="true"></property> </bean> -->
+
+	<bean id="jmsListenerContainer"
+		class="org.springframework.jms.listener.DefaultMessageListenerContainer"
+		p:connectionFactory-ref="connectionFactory" p:destinationName="${profileamqlistener.destination.name}"
+		p:messageListener-ref="messageListener" p:pubSubDomain="true"
+		p:subscriptionDurable="true" p:sessionAcknowledgeModeName="CLIENT_ACKNOWLEDGE"
+		p:clientId="${profileamqlistener.clientId}"></bean>
+
+
+
+
+
+
+
+
+
+
+
+</beans>

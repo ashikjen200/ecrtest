@@ -1,0 +1,250 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>cande</groupId>
+	<artifactId>cande_profile_amq_listener</artifactId>
+	<!-- If needs a change, make sure to change version in Dockerfile as well -->
+	<version>0.0.1</version>
+	<name>ProfilerAMQListener</name>
+
+	<build>
+		<resources>
+			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>com.dowjones.profileamqlistener.app.AMQListenerApp</mainClass>
+							<classpathPrefix>dependency-jars/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+					<forceJavaCompilerUse>true</forceJavaCompilerUse>
+				</configuration>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>3.0.0</version> <executions> <execution> <phase>package</phase> 
+				<goals> <goal>shade</goal> </goals> </execution> </executions> <dependencies> 
+				<dependency> <groupId>com.github.edwgiz</groupId> <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId> 
+				<version>2.8.1</version> </dependency> </dependencies> </plugin> -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>attached</goal>
+						</goals>
+						<phase>package</phase>
+						<configuration>
+
+							<descriptorRefs>
+								<descriptorRef>jar-with-dependencies</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>com.dowjones.profileamqlistener.app.AMQListenerApp</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.dowjones.profileamqlistener.app.AMQListenerApp</mainClass>
+		<!-- 			<systemProperties>
+						<systemProperty>
+							<key>broker.url</key>
+							<value>tcp://deliverybroker.fint.dowjones.net:61616</value>
+						</systemProperty>
+						<systemProperty>
+							<key>profileamqlistener.destination.name</key>
+							<value>Selector.cgw_archdest.VirtualTopic.Selector.delivery.archdest</value>
+						</systemProperty>
+						<systemProperty>
+							<key>profileamqlistener.kinesisstream.name</key>
+							<value>streamone</value>
+						</systemProperty>
+						<systemProperty>
+							<key>log_level</key>
+							<value>Info</value>
+						</systemProperty>
+					</systemProperties> -->
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-bom</artifactId>
+				<version>1.11.246</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<properties>
+
+		<!-- Generic properties -->
+		<java.version>1.8</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+
+		<!-- Spring -->
+		<spring-framework.version>5.0.4.RELEASE</spring-framework.version>
+
+
+		<!-- Logging <log4j.version>1.2.17</log4j.version> -->
+
+		<!-- Test -->
+		<junit.version>4.11</junit.version>
+
+		<!-- Contrail PCI framework -->
+		<contrail.pci.version>1.0.3-SNAPSHOT</contrail.pci.version>
+		<contrail.pci.common.version>0.0.8-SNAPSHOT</contrail.pci.common.version>
+
+
+
+	</properties>
+	<repositories>
+		<repository>
+			<id>artifactory</id>
+			<url>http://djin-artifact01.dowjones.net:8081/artifactory/repo</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<!-- Spring and Transactions -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+
+		<!-- Logging with log4j -->
+		<!-- https://mvnrepository.com/artifact/log4j/log4j <dependency> <groupId>log4j</groupId> 
+			<artifactId>log4j</artifactId> <version>${log4j.version}</version> </dependency> -->
+
+		<!-- Contrail PCI framework -->
+
+		<dependency>
+			<groupId>FSP</groupId>
+			<artifactId>SPUtilities</artifactId>
+			<version>0.0.5-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.amazonaws</groupId>
+					<artifactId>aws-java-sdk</artifactId>
+				</exclusion>
+
+				<exclusion>
+					<groupId>org.apache.activemq</groupId>
+					<artifactId>activemq-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>aopalliance</groupId>
+					<artifactId>aopalliance</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.activemq</groupId>
+					<artifactId>activemq-pool</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-jms_1.1_spec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>12.0</version>
+		</dependency>
+
+		<!-- Test Artifacts -->
+		<!-- <dependency> <groupId>org.springframework</groupId> <artifactId>spring-test</artifactId> 
+			<version>${spring-framework.version}</version> <scope>test</scope> </dependency> -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- ActiveMQ Spring -->
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-spring -->
+
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-jms -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jms</artifactId>
+			<version>${spring-framework.version}</version>
+		</dependency>
+		<!-- AWS Resource -->
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-kinesis -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-kinesis</artifactId>
+
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	</dependencies>
+
+	<scm>
+		<connection>scm:git:ssh://git@github.dowjones.net/track/cande_profile_amq_listener.git</connection>
+		<developerConnection>scm:git:ssh://git@github.dowjones.net/track/cande_profile_amq_listener.git</developerConnection>
+		<url>ssh://git@github.dowjones.net/track/cande_profile_amq_listener.git</url>
+	</scm>
+</project>

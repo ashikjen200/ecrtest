@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="false">
+
+	<!-- Set INFO to WARN for warning-level logging, or DEBUG for debug-level 
+		logging. -->
+
+	<!-- Output to terminal by default. -->
+	<appender name="terminal" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{MMM dd hh:mm:ss.SSS} *%-5p* [%t] %c{1}: %m \n" />
+		</layout>
+	</appender>
+
+<!-- 
+ 	<appender name="asynch-file" class="org.apache.log4j.AsyncAppender">
+		<param name="locationInfo" value="false" />
+		<appender-ref ref="out-file" />
+	</appender>
+
+	<appender name="out-file" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="file.log" />
+		<param name="append" value="true" />
+		<param name="maxFileSize" value="100MB" />
+		<param name="maxBackupIndex" value="10" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{MMM dd hh:mm:ss.SSS} *%-5p* [%t] %c{1}: %m \n" />
+		</layout>
+	</appender>  -->
+	
+	<root> 
+		<level value="${log_level}" /> 
+		<appender-ref ref="terminal" />
+		<!--  <appender-ref ref="asynch-file" /> -->
+	</root> 
+	 
+</log4j:configuration>

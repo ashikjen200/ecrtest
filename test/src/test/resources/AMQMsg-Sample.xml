@@ -1,0 +1,15 @@
+﻿<ContentDeliveryData>
+	<fileTickets>
+		<fileTicket>
+			<fileName>0000000008821685_APBTRxxx_C_20180227.dsx</fileName>
+			<s3Uri>https://s3.amazonaws.com/djin-int/content-delivery/outputV2/aidest/20180227/15/0000000008821685_APBTRxxx_C_20180227.dsx
+			</s3Uri>
+			<directory>Live</directory>
+			<seqNum>8821685</seqNum>
+			<origfName>AN_APBTR00020180227ee2r00002</origfName>
+			<type>DISTDOC</type>
+			<fileNameNoSequence>XXXXXXXXXXXXXXXX_APBTRxxx_C_20180227.dsx
+			</fileNameNoSequence>
+		</fileTicket>
+	</fileTickets>
+</ContentDeliveryData>
